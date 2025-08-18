@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS", // The output module format
+    "target": "ES2020", // Target a modern version of JavaScript
+    "outDir": "./dist", // Where to output the compiled JavaScript
+    "rootDir": "./", // The root of your source files
+    "esModuleInterop": true, // VERY IMPORTANT: Allows `import express from 'express'` to work
+    "forceConsistentCasingInFileNames": true,
+    "strict": true, // Enforces stricter type-checking
+    "skipLibCheck": true
+  }
+}
