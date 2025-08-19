@@ -7,7 +7,6 @@ export const handleAuthLogin = async (req: Request, res: Response) => {
   try {
     const { identifier, password, role } = req.body;
 
-    // ... (Your validation code remains the same)
     if (!identifier || !password || !role) {
       return res
         .status(400)
@@ -16,7 +15,6 @@ export const handleAuthLogin = async (req: Request, res: Response) => {
 
     let user: any = null;
 
-    // ... (Your switch statement to find the user remains the same)
     switch (role.toLowerCase()) {
       case "student":
         user = await prisma.student.findUnique({
@@ -49,36 +47,28 @@ export const handleAuthLogin = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid credentials." });
     }
 
-    // --- NEW JWT LOGIC STARTS HERE ---
-
-    // 7. Generate a JWT
     const tokenPayload = {
-      id: user.id, // The user's unique ID from the database
-      role: role, // The user's role
+      id: user.id,
+      role: role,
     };
 
     const secret = process.env.JWT_SECRET;
     if (!secret) {
-      // This is an important check for server health
       throw new Error(
         "JWT_SECRET is not defined in the environment variables."
       );
     }
 
     const token = jwt.sign(tokenPayload, secret, {
-      expiresIn: "1d", // The token will expire in 1 day
+      expiresIn: "1d",
     });
 
-    // --- JWT LOGIC ENDS ---
-
     const { password: _, ...userWithoutPassword } = user;
-
-    // 8. Send the token back to the client along with user data
     res.status(200).json({
       message: "Login successful",
       user: userWithoutPassword,
       role: role,
-      token: token, // <-- Include the token in the response
+      token: token,
     });
   } catch (err) {
     console.error("Login error:", err);

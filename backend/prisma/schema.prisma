@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// datasource and generator definitions remain the same
 
 generator client {
   provider = "prisma-client-js"
@@ -14,21 +10,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
+// NOTE: I've removed the 'Rate' enum. It's much more flexible and
+// better for calculations (like averages) to use an Integer for ratings.
+// We can enforce the 1-5 range in our application logic.
 
 model Student {
   id         String   @id @default(uuid())
-  studentID  String   @unique        
+  studentID  String   @unique
   password   String
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  subjects    StudentSubject[]
+  evaluations Evaluation[] // Added: A student can make many evaluations
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Instructor {
   id           String   @id @default(uuid())
-  instructorID String   @unique        
+  instructorID String   @unique
   password     String
+
+  subjects     InstructorSubject[]
+  evaluations  Evaluation[] // Added: An instructor can receive many evaluations
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -36,9 +40,94 @@ model Instructor {
 
 model Admin {
   id        String   @id @default(uuid())
-  adminID   String   @unique        
+  adminID   String   @unique
   password  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Subject {
+  id          String @id @default(uuid())
+  subjectCode String @unique
+  name        String @unique
+
+  students    StudentSubject[]
+  instructors InstructorSubject[]
+  evaluations Evaluation[] // Added: A subject can be part of many evaluations
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StudentSubject {
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId String
+
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  subjectId String
+
+  assignedAt DateTime @default(now())
+
+  @@id([studentId, subjectId])
+}
+
+model InstructorSubject {
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  instructorId String
+
+  subject      Subject @relation(fields: [subjectId], references: [id])
+  subjectId    String
+
+  assignedAt DateTime @default(now())
+
+  @@id([instructorId, subjectId])
+}
+
+
+// --- NEW EVALUATION MODELS ---
+
+model Question {
+  id           String   @id @default(uuid())
+  questionText String   // The text of the question, e.g., "Explains concepts clearly."
+  category     String   // e.g., "Teaching Effectiveness", "Classroom Management"
+  isActive     Boolean  @default(true) // So you can retire questions without deleting old data
+
+  responses    EvaluationResponse[] // A question can have many responses across all evaluations
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Evaluation {
+  id           String   @id @default(uuid())
+  comments     String?  // Optional field for overall student comments
+
+  // The context of the evaluation
+  student      Student    @relation(fields: [studentId], references: [id])
+  studentId    String
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  instructorId String
+  subject      Subject    @relation(fields: [subjectId], references: [id])
+  subjectId    String
+
+  // The actual answers to the questions
+  responses    EvaluationResponse[]
+
+  submittedAt  DateTime   @default(now())
+
+  // A student can only evaluate a specific instructor for a specific subject ONCE.
+  @@unique([studentId, instructorId, subjectId])
+}
+
+model EvaluationResponse {
+  rating       Int
+  
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+  evaluationId String
+
+  question     Question   @relation(fields: [questionId], references: [id])
+  questionId   String     
+
+  @@id([evaluationId, questionId]) 
 }

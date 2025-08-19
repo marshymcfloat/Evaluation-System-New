@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id        String @id @default(uuid())
+  studentID String @unique
+  password  String
+
+  // relations
+  subjects StudentSubject[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Instructor {
+  id           String @id @default(uuid())
+  instructorID String @unique
+  password     String
+
+  // relations
+  subjects InstructorSubject[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  adminID  String @unique
+  password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subject {
+  id          String @id @default(uuid())
+  subjectCode String @unique
+  name        String @unique
+
+  students    StudentSubject[]
+  instructors InstructorSubject[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StudentSubject {
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId String
+
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  subjectId String
+
+  assignedAt DateTime @default(now())
+
+  @@id([studentId, subjectId])
+}
+
+model InstructorSubject {
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  instructorId String
+
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  subjectId String
+
+  assignedAt DateTime @default(now())
+
+  @@id([instructorId, subjectId])
+}
