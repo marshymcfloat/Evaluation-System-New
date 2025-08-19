@@ -10,37 +10,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// NOTE: I've removed the 'Rate' enum. It's much more flexible and
-// better for calculations (like averages) to use an Integer for ratings.
-// We can enforce the 1-5 range in our application logic.
 
 model Student {
-  id         String   @id @default(uuid())
-  studentID  String   @unique
-  password   String
+  id          String   @id @default(uuid())
+  studentID   String   @unique
+  name        String   
+  password    String
 
   subjects    StudentSubject[]
-  evaluations Evaluation[] // Added: A student can make many evaluations
+  evaluations Evaluation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+
 model Instructor {
   id           String   @id @default(uuid())
   instructorID String   @unique
+  name         String   
   password     String
 
   subjects     InstructorSubject[]
-  evaluations  Evaluation[] // Added: An instructor can receive many evaluations
+  evaluations  Evaluation[]
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-}
+} 
+
 
 model Admin {
   id        String   @id @default(uuid())
   adminID   String   @unique
+  name      String   
   password  String
 
   createdAt DateTime @default(now())
@@ -85,15 +87,14 @@ model InstructorSubject {
 }
 
 
-// --- NEW EVALUATION MODELS ---
 
 model Question {
   id           String   @id @default(uuid())
-  questionText String   // The text of the question, e.g., "Explains concepts clearly."
-  category     String   // e.g., "Teaching Effectiveness", "Classroom Management"
-  isActive     Boolean  @default(true) // So you can retire questions without deleting old data
+  questionText String   
+  category     String   
+  isActive     Boolean  @default(true) 
 
-  responses    EvaluationResponse[] // A question can have many responses across all evaluations
+  responses    EvaluationResponse[] 
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -101,9 +102,8 @@ model Question {
 
 model Evaluation {
   id           String   @id @default(uuid())
-  comments     String?  // Optional field for overall student comments
+  comments     String?  
 
-  // The context of the evaluation
   student      Student    @relation(fields: [studentId], references: [id])
   studentId    String
   instructor   Instructor @relation(fields: [instructorId], references: [id])
@@ -111,12 +111,10 @@ model Evaluation {
   subject      Subject    @relation(fields: [subjectId], references: [id])
   subjectId    String
 
-  // The actual answers to the questions
   responses    EvaluationResponse[]
 
   submittedAt  DateTime   @default(now())
 
-  // A student can only evaluate a specific instructor for a specific subject ONCE.
   @@unique([studentId, instructorId, subjectId])
 }
 

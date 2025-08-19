@@ -1,3 +1,5 @@
+// datasource and generator definitions remain the same
+
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -11,10 +13,11 @@ datasource db {
 model Student {
   id        String @id @default(uuid())
   studentID String @unique
+  name      String
   password  String
 
-  // relations
-  subjects StudentSubject[]
+  subjects    StudentSubject[]
+  evaluations Evaluation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -23,10 +26,11 @@ model Student {
 model Instructor {
   id           String @id @default(uuid())
   instructorID String @unique
+  name         String
   password     String
 
-  // relations
-  subjects InstructorSubject[]
+  subjects    InstructorSubject[]
+  evaluations Evaluation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -35,6 +39,7 @@ model Instructor {
 model Admin {
   id       String @id @default(uuid())
   adminID  String @unique
+  name     String
   password String
 
   createdAt DateTime @default(now())
@@ -48,6 +53,7 @@ model Subject {
 
   students    StudentSubject[]
   instructors InstructorSubject[]
+  evaluations Evaluation[] // Added: A subject can be part of many evaluations
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,4 +81,46 @@ model InstructorSubject {
   assignedAt DateTime @default(now())
 
   @@id([instructorId, subjectId])
+}
+
+model Question {
+  id           String  @id @default(uuid())
+  questionText String
+  category     String
+  isActive     Boolean @default(true)
+
+  responses EvaluationResponse[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Evaluation {
+  id       String  @id @default(uuid())
+  comments String?
+
+  student      Student    @relation(fields: [studentId], references: [id])
+  studentId    String
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  instructorId String
+  subject      Subject    @relation(fields: [subjectId], references: [id])
+  subjectId    String
+
+  responses EvaluationResponse[]
+
+  submittedAt DateTime @default(now())
+
+  @@unique([studentId, instructorId, subjectId])
+}
+
+model EvaluationResponse {
+  rating Int
+
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+  evaluationId String
+
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String
+
+  @@id([evaluationId, questionId])
 }

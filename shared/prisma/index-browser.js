@@ -123,6 +123,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.StudentScalarFieldEnum = {
   id: 'id',
   studentID: 'studentID',
+  name: 'name',
   password: 'password',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -131,6 +132,7 @@ exports.Prisma.StudentScalarFieldEnum = {
 exports.Prisma.InstructorScalarFieldEnum = {
   id: 'id',
   instructorID: 'instructorID',
+  name: 'name',
   password: 'password',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -139,6 +141,7 @@ exports.Prisma.InstructorScalarFieldEnum = {
 exports.Prisma.AdminScalarFieldEnum = {
   id: 'id',
   adminID: 'adminID',
+  name: 'name',
   password: 'password',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -164,6 +167,30 @@ exports.Prisma.InstructorSubjectScalarFieldEnum = {
   assignedAt: 'assignedAt'
 };
 
+exports.Prisma.QuestionScalarFieldEnum = {
+  id: 'id',
+  questionText: 'questionText',
+  category: 'category',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EvaluationScalarFieldEnum = {
+  id: 'id',
+  comments: 'comments',
+  studentId: 'studentId',
+  instructorId: 'instructorId',
+  subjectId: 'subjectId',
+  submittedAt: 'submittedAt'
+};
+
+exports.Prisma.EvaluationResponseScalarFieldEnum = {
+  rating: 'rating',
+  evaluationId: 'evaluationId',
+  questionId: 'questionId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -174,6 +201,11 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 
 exports.Prisma.ModelName = {
   Student: 'Student',
@@ -181,7 +213,10 @@ exports.Prisma.ModelName = {
   Admin: 'Admin',
   Subject: 'Subject',
   StudentSubject: 'StudentSubject',
-  InstructorSubject: 'InstructorSubject'
+  InstructorSubject: 'InstructorSubject',
+  Question: 'Question',
+  Evaluation: 'Evaluation',
+  EvaluationResponse: 'EvaluationResponse'
 };
 
 /**

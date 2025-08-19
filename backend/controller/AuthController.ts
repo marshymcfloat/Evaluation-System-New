@@ -78,13 +78,12 @@ export const handleAuthLogin = async (req: Request, res: Response) => {
 
 export const handleAuthRegister = async (req: Request, res: Response) => {
   try {
-    console.log("meow");
-    const { identifier, password, role } = req.body;
+    const { identifier, password, role, name } = req.body;
 
-    if (!identifier || !password || !role) {
-      return res
-        .status(400)
-        .json({ message: "Identifier, password, and role are required." });
+    if (!identifier || !password || !role || !name) {
+      return res.status(400).json({
+        message: "Identifier, name, password, and role are required.",
+      });
     }
 
     let existingUser: any = null;
@@ -125,6 +124,7 @@ export const handleAuthRegister = async (req: Request, res: Response) => {
         newUser = await prisma.student.create({
           data: {
             studentID: identifier,
+            name: name,
             password: hashedPassword,
           },
         });
@@ -133,6 +133,7 @@ export const handleAuthRegister = async (req: Request, res: Response) => {
         newUser = await prisma.instructor.create({
           data: {
             instructorID: identifier,
+            name: name,
             password: hashedPassword,
           },
         });
@@ -141,6 +142,7 @@ export const handleAuthRegister = async (req: Request, res: Response) => {
         newUser = await prisma.admin.create({
           data: {
             adminID: identifier,
+            name: name,
             password: hashedPassword,
           },
         });
@@ -155,7 +157,12 @@ export const handleAuthRegister = async (req: Request, res: Response) => {
       } registered successfully.`,
       user: userWithoutPassword,
     });
-  } catch (err) {
+  } catch (err: any) {
+    if (err.code === "P2002") {
+      return res
+        .status(409)
+        .json({ message: "An account with this ID already exists." });
+    }
     console.error("Registration error:", err);
     res.status(500).json({ message: "An internal server error occurred." });
   }
