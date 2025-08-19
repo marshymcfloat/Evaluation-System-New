@@ -113,6 +113,83 @@ export const createInstructor = async (req: Request, res: Response) => {
   }
 };
 
+export const updateInstructor = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, subjectIds } = req.body;
+
+  if (!name || !subjectIds || !Array.isArray(subjectIds)) {
+    return res
+      .status(400)
+      .json({ message: "Name and a subjectIds array are required." });
+  }
+
+  try {
+    const updatedInstructor = await prisma.$transaction(async (tx) => {
+      const instructor = await tx.instructor.update({
+        where: { id },
+        data: { name },
+      });
+
+      await tx.instructorSubject.deleteMany({
+        where: { instructorId: id },
+      });
+
+      if (subjectIds.length > 0) {
+        const instructorSubjectData = subjectIds.map((subjectId: string) => ({
+          instructorId: id,
+          subjectId: subjectId,
+        }));
+        await tx.instructorSubject.createMany({
+          data: instructorSubjectData,
+        });
+      }
+
+      return instructor;
+    });
+
+    return res.status(200).json({
+      message: "Instructor updated successfully.",
+      instructor: updatedInstructor,
+    });
+  } catch (err: any) {
+    if (err.code === "P2025") {
+      return res
+        .status(404)
+        .json({ message: `Instructor with ID ${id} not found.` });
+    }
+    console.error("Error updating instructor:", err);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const deleteInstructor = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.instructorSubject.deleteMany({
+        where: { instructorId: id },
+      });
+
+      await tx.instructor.delete({
+        where: { id },
+      });
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Instructor deleted successfully." });
+  } catch (err: any) {
+    if (err.code === "P2025") {
+      return res
+        .status(404)
+        .json({ message: `Instructor with ID ${id} not found.` });
+    }
+    console.error("Error deleting instructor:", err);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 export const createSubject = async (req: Request, res: Response) => {
   const { subjectCode, name } = req.body;
 
