@@ -5,20 +5,24 @@ import {
   createSubject,
   deleteInstructor,
   deleteQuestion,
+  deleteSubject,
   getAllQuestions,
   getAllSubjects,
   getInstructors,
   updateInstructor,
   updateQuestion,
+  updateSubject,
 } from "../controller/AdminController";
 
 const router = Router();
 
-router.post("/createSubject", createSubject);
-router.get("/getSubjects", getAllSubjects);
+router.get("/subjects", getAllSubjects);
+router.post("/subjects", createSubject);
+router.put("/subjects/:id", updateSubject);
+router.delete("/subjects/:id", deleteSubject);
 
-router.post("/createInstructor", createInstructor);
-router.get("/getInstructors", getInstructors);
+router.post("/instructors", createInstructor);
+router.get("/instructors", getInstructors);
 router.put("/instructors/:id", updateInstructor);
 router.delete("/instructors/:id", deleteInstructor);
 

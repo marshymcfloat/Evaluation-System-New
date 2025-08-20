@@ -30,7 +30,7 @@ import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 interface QuestionTableProps {
   questions: Question[];
   onEdit: (question: Question) => void;
-  onDelete: (questionId: string) => void;
+  onDelete: (question: Question) => void;
 }
 
 export const QuestionTable = ({
@@ -85,7 +85,7 @@ export const QuestionTable = ({
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-500"
-                          onClick={() => onDelete(q.id)}
+                          onClick={() => onDelete(q)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" /> Delete
                         </DropdownMenuItem>

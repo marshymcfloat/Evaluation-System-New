@@ -5018,6 +5018,7 @@ export namespace Prisma {
     id: string | null
     subjectCode: string | null
     name: string | null
+    iconName: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5026,6 +5027,7 @@ export namespace Prisma {
     id: string | null
     subjectCode: string | null
     name: string | null
+    iconName: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5034,6 +5036,7 @@ export namespace Prisma {
     id: number
     subjectCode: number
     name: number
+    iconName: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5044,6 +5047,7 @@ export namespace Prisma {
     id?: true
     subjectCode?: true
     name?: true
+    iconName?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5052,6 +5056,7 @@ export namespace Prisma {
     id?: true
     subjectCode?: true
     name?: true
+    iconName?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5060,6 +5065,7 @@ export namespace Prisma {
     id?: true
     subjectCode?: true
     name?: true
+    iconName?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5141,6 +5147,7 @@ export namespace Prisma {
     id: string
     subjectCode: string
     name: string
+    iconName: string | null
     createdAt: Date
     updatedAt: Date
     _count: SubjectCountAggregateOutputType | null
@@ -5166,6 +5173,7 @@ export namespace Prisma {
     id?: boolean
     subjectCode?: boolean
     name?: boolean
+    iconName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     students?: boolean | Subject$studentsArgs<ExtArgs>
@@ -5178,6 +5186,7 @@ export namespace Prisma {
     id?: boolean
     subjectCode?: boolean
     name?: boolean
+    iconName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["subject"]>
@@ -5186,6 +5195,7 @@ export namespace Prisma {
     id?: boolean
     subjectCode?: boolean
     name?: boolean
+    iconName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["subject"]>
@@ -5194,11 +5204,12 @@ export namespace Prisma {
     id?: boolean
     subjectCode?: boolean
     name?: boolean
+    iconName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SubjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subjectCode" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["subject"]>
+  export type SubjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subjectCode" | "name" | "iconName" | "createdAt" | "updatedAt", ExtArgs["result"]["subject"]>
   export type SubjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     students?: boolean | Subject$studentsArgs<ExtArgs>
     instructors?: boolean | Subject$instructorsArgs<ExtArgs>
@@ -5219,6 +5230,7 @@ export namespace Prisma {
       id: string
       subjectCode: string
       name: string
+      iconName: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["subject"]>
@@ -5650,6 +5662,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Subject", 'String'>
     readonly subjectCode: FieldRef<"Subject", 'String'>
     readonly name: FieldRef<"Subject", 'String'>
+    readonly iconName: FieldRef<"Subject", 'String'>
     readonly createdAt: FieldRef<"Subject", 'DateTime'>
     readonly updatedAt: FieldRef<"Subject", 'DateTime'>
   }
@@ -11538,6 +11551,7 @@ export namespace Prisma {
     id: 'id',
     subjectCode: 'subjectCode',
     name: 'name',
+    iconName: 'iconName',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -11881,6 +11895,7 @@ export namespace Prisma {
     id?: StringFilter<"Subject"> | string
     subjectCode?: StringFilter<"Subject"> | string
     name?: StringFilter<"Subject"> | string
+    iconName?: StringNullableFilter<"Subject"> | string | null
     createdAt?: DateTimeFilter<"Subject"> | Date | string
     updatedAt?: DateTimeFilter<"Subject"> | Date | string
     students?: StudentSubjectListRelationFilter
@@ -11892,6 +11907,7 @@ export namespace Prisma {
     id?: SortOrder
     subjectCode?: SortOrder
     name?: SortOrder
+    iconName?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     students?: StudentSubjectOrderByRelationAggregateInput
@@ -11906,6 +11922,7 @@ export namespace Prisma {
     AND?: SubjectWhereInput | SubjectWhereInput[]
     OR?: SubjectWhereInput[]
     NOT?: SubjectWhereInput | SubjectWhereInput[]
+    iconName?: StringNullableFilter<"Subject"> | string | null
     createdAt?: DateTimeFilter<"Subject"> | Date | string
     updatedAt?: DateTimeFilter<"Subject"> | Date | string
     students?: StudentSubjectListRelationFilter
@@ -11917,6 +11934,7 @@ export namespace Prisma {
     id?: SortOrder
     subjectCode?: SortOrder
     name?: SortOrder
+    iconName?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SubjectCountOrderByAggregateInput
@@ -11931,6 +11949,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Subject"> | string
     subjectCode?: StringWithAggregatesFilter<"Subject"> | string
     name?: StringWithAggregatesFilter<"Subject"> | string
+    iconName?: StringNullableWithAggregatesFilter<"Subject"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Subject"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Subject"> | Date | string
   }
@@ -12423,6 +12442,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentSubjectCreateNestedManyWithoutSubjectInput
@@ -12434,6 +12454,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentSubjectUncheckedCreateNestedManyWithoutSubjectInput
@@ -12445,6 +12466,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentSubjectUpdateManyWithoutSubjectNestedInput
@@ -12456,6 +12478,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentSubjectUncheckedUpdateManyWithoutSubjectNestedInput
@@ -12467,6 +12490,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12475,6 +12499,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12483,6 +12508,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12907,10 +12933,31 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
   export type SubjectCountOrderByAggregateInput = {
     id?: SortOrder
     subjectCode?: SortOrder
     name?: SortOrder
+    iconName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12919,6 +12966,7 @@ export namespace Prisma {
     id?: SortOrder
     subjectCode?: SortOrder
     name?: SortOrder
+    iconName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12927,8 +12975,27 @@ export namespace Prisma {
     id?: SortOrder
     subjectCode?: SortOrder
     name?: SortOrder
+    iconName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type StudentScalarRelationFilter = {
@@ -13042,26 +13109,6 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
-  }
-
   export type EvaluationStudentIdInstructorIdSubjectIdCompoundUniqueInput = {
     studentId: string
     instructorId: string
@@ -13093,24 +13140,6 @@ export namespace Prisma {
     instructorId?: SortOrder
     subjectId?: SortOrder
     submittedAt?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -13399,6 +13428,10 @@ export namespace Prisma {
     connect?: EvaluationWhereUniqueInput | EvaluationWhereUniqueInput[]
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type StudentSubjectUpdateManyWithoutSubjectNestedInput = {
     create?: XOR<StudentSubjectCreateWithoutSubjectInput, StudentSubjectUncheckedCreateWithoutSubjectInput> | StudentSubjectCreateWithoutSubjectInput[] | StudentSubjectUncheckedCreateWithoutSubjectInput[]
     connectOrCreate?: StudentSubjectCreateOrConnectWithoutSubjectInput | StudentSubjectCreateOrConnectWithoutSubjectInput[]
@@ -13617,10 +13650,6 @@ export namespace Prisma {
     connect?: EvaluationResponseWhereUniqueInput | EvaluationResponseWhereUniqueInput[]
   }
 
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
-  }
-
   export type StudentUpdateOneRequiredWithoutEvaluationsNestedInput = {
     create?: XOR<StudentCreateWithoutEvaluationsInput, StudentUncheckedCreateWithoutEvaluationsInput>
     connectOrCreate?: StudentCreateOrConnectWithoutEvaluationsInput
@@ -13776,19 +13805,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -13829,6 +13845,19 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -14193,6 +14222,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     instructors?: InstructorSubjectCreateNestedManyWithoutSubjectInput
@@ -14203,6 +14233,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     instructors?: InstructorSubjectUncheckedCreateNestedManyWithoutSubjectInput
@@ -14260,6 +14291,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     instructors?: InstructorSubjectUpdateManyWithoutSubjectNestedInput
@@ -14270,6 +14302,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     instructors?: InstructorSubjectUncheckedUpdateManyWithoutSubjectNestedInput
@@ -14305,6 +14338,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentSubjectCreateNestedManyWithoutSubjectInput
@@ -14315,6 +14349,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentSubjectUncheckedCreateNestedManyWithoutSubjectInput
@@ -14372,6 +14407,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentSubjectUpdateManyWithoutSubjectNestedInput
@@ -14382,6 +14418,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentSubjectUncheckedUpdateManyWithoutSubjectNestedInput
@@ -14487,6 +14524,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentSubjectCreateNestedManyWithoutSubjectInput
@@ -14497,6 +14535,7 @@ export namespace Prisma {
     id?: string
     subjectCode: string
     name: string
+    iconName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentSubjectUncheckedCreateNestedManyWithoutSubjectInput
@@ -14605,6 +14644,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentSubjectUpdateManyWithoutSubjectNestedInput
@@ -14615,6 +14655,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subjectCode?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    iconName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentSubjectUncheckedUpdateManyWithoutSubjectNestedInput

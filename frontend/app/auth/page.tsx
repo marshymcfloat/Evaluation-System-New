@@ -1,12 +1,9 @@
-import AuthInputGroup from "@/components/ui/AuthInputGroup";
+import { AuthForm } from "@/components/auth/AuthForm";
 
 const AuthPage = () => {
   return (
-    <main className="w-screen flex justify-center items-center h-screen">
-      <div className="w-[500px] h-[600px]  gap-8 flex flex-col justify-center items-center  rounded-2xl shadow-2xl">
-        <h1 className="text-4xl tracking-widest font-bold text-center ">HTU</h1>
-        <AuthInputGroup />
-      </div>
+    <main className="flex min-h-screen w-full items-center justify-center bg-muted/40 p-4">
+      <AuthForm />
     </main>
   );
 };

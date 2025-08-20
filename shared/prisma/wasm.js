@@ -151,6 +151,7 @@ exports.Prisma.SubjectScalarFieldEnum = {
   id: 'id',
   subjectCode: 'subjectCode',
   name: 'name',
+  iconName: 'iconName',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

@@ -1,166 +1,98 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React, { useEffect, useState } from "react";
-import InstructorTable from "@/components/admin-dashboard/InstructorTable";
+import { useState, useEffect } from "react";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import InstructorDialog from "@/components/admin-dashboard/AddInstructor";
+import { InstructorClientPage } from "@/components/admin-dashboard/InstructorClientPage";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Instructor, Subject } from "../../../../shared/prisma";
-import Spinner from "@/components/ui/Spinner";
-import { Button } from "@/components/ui/button";
-import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 
-export type InstructorWithSubjects = Instructor & {
+export type InstructorWithDetails = Instructor & {
   subjects: Subject[];
-  studentCount?: number;
+  studentCount: number;
 };
 
-const AdminDashboardPage = () => {
-  const [instructors, setInstructors] = useState<InstructorWithSubjects[]>([]);
+const InstructorsManagementPage = () => {
+  const [instructors, setInstructors] = useState<InstructorWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // State for Add/Edit Dialog
-  const [isInstructorDialogOpen, setIsInstructorDialogOpen] = useState(false);
-  const [instructorToEdit, setInstructorToEdit] =
-    useState<InstructorWithSubjects | null>(null);
-
-  // State for Delete Dialog
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [instructorToDelete, setInstructorToDelete] =
-    useState<InstructorWithSubjects | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchInstructors = async () => {
     try {
-      setIsLoading(true);
-      const response = await fetch(
-        "http://localhost:8080/admin/getInstructors"
-      );
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Authentication token not found.");
+
+      const response = await fetch("http://localhost:8080/admin/instructors", {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       if (!response.ok) {
-        throw new Error("Failed to fetch instructors");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch instructors.");
       }
-      const data: InstructorWithSubjects[] = await response.json();
+
+      const data: InstructorWithDetails[] = await response.json();
       setInstructors(data);
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
+    setIsLoading(true);
     fetchInstructors();
   }, []);
 
-  // --- Handlers for Add/Edit ---
-  const handleOpenAddDialog = () => {
-    setInstructorToEdit(null); // Clear any previous edit data
-    setIsInstructorDialogOpen(true);
-  };
+  const totalInstructors = instructors.length;
+  const instructorsWithoutSubjects = instructors.filter(
+    (inst) => inst.subjects.length === 0
+  ).length;
 
-  const handleOpenEditDialog = (instructor: InstructorWithSubjects) => {
-    setInstructorToEdit(instructor);
-    setIsInstructorDialogOpen(true);
-  };
+  const instructorWithMostStudents = instructors.reduce(
+    (max, inst) => (inst.studentCount > (max?.studentCount ?? -1) ? inst : max),
+    null as InstructorWithDetails | null
+  );
 
-  // --- Handlers for Delete ---
-  const handleOpenDeleteDialog = (instructor: InstructorWithSubjects) => {
-    setInstructorToDelete(instructor);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!instructorToDelete) return;
-    setIsDeleting(true);
-    try {
-      const response = await fetch(
-        `http://localhost:8080/admin/instructors/${instructorToDelete.id}`,
-        {
-          method: "DELETE",
+  const stats = {
+    totalInstructors,
+    instructorsWithoutSubjects,
+    instructorWithMostStudents: instructorWithMostStudents
+      ? {
+          name: instructorWithMostStudents.name,
+          studentCount: instructorWithMostStudents.studentCount,
         }
-      );
-      if (!response.ok) throw new Error("Failed to delete instructor");
-
-      // Refresh list and close dialog on success
-      fetchInstructors();
-      setIsDeleteDialogOpen(false);
-      setInstructorToDelete(null);
-    } catch (error) {
-      console.error(error);
-      // TODO: Show an error toast
-    } finally {
-      setIsDeleting(false);
-    }
+      : null,
   };
 
   return (
     <SidebarInset>
       <header className="flex items-center gap-2 p-4 border-b">
         <SidebarTrigger />
-        <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+        <h1 className="text-xl font-semibold">Instructor Management</h1>
       </header>
-
-      <div className="p-8 flex gap-4 flex-col h-full">
-        <div>
-          <Card className="max-w-[200px]">
-            <CardHeader>
-              <CardTitle>Instructor Count</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl">
-                {isLoading ? "..." : instructors.length}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="flex-grow">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <Spinner />
-            </div>
-          ) : (
-            <InstructorTable
-              instructors={instructors}
-              onEdit={handleOpenEditDialog}
-              onDelete={handleOpenDeleteDialog}
-            />
-          )}
-        </div>
-
-        <div className="flex justify-end">
-          <Button onClick={handleOpenAddDialog}>Add Instructor</Button>
-        </div>
-      </div>
-
-      {/* Edit/Add Dialog */}
-      <InstructorDialog
-        isOpen={isInstructorDialogOpen}
-        onOpenChange={setIsInstructorDialogOpen}
-        onSaveSuccess={fetchInstructors}
-        initialData={instructorToEdit}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <DeleteConfirmationDialog
-        isOpen={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onConfirm={handleConfirmDelete}
-        isDeleting={isDeleting}
-        title="Are you absolutely sure?"
-        description={
-          <>
-            This action cannot be undone. This will permanently delete the
-            instructor{" "}
-            <strong className="text-foreground">
-              {instructorToDelete?.name}
-            </strong>{" "}
-            and all associated data.
-          </>
-        }
-      />
+      <main className="relative p-4 md:p-8 min-h-[calc(100vh-61px)]">
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </div>
+        ) : error ? (
+          <div className="text-red-600 bg-red-100 p-4 rounded-md">
+            <h3 className="font-bold">Error</h3>
+            <p>{error}</p>
+          </div>
+        ) : (
+          <InstructorClientPage
+            initialInstructors={instructors}
+            initialStats={stats}
+            onDataChange={fetchInstructors}
+          />
+        )}
+      </main>
     </SidebarInset>
   );
 };
 
-export default AdminDashboardPage;
+export default InstructorsManagementPage;

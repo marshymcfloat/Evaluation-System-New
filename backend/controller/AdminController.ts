@@ -2,27 +2,13 @@ import { Request, Response } from "express";
 import prisma from "../prisma/prisma";
 import bcrypt from "bcrypt";
 
-export const getAllSubjects = async (req: Request, res: Response) => {
-  try {
-    const subjects = await prisma.subject.findMany();
-
-    if (!subjects) {
-      return res.status(404).json({ message: "There are no subjects found" });
-    }
-
-    return res.status(200).json(subjects);
-  } catch (err) {
-    console.error("Error fetching subjects:", err);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
-
 export const getInstructors = async (req: Request, res: Response) => {
   try {
-    const instructorsWithJoinTable = await prisma.instructor.findMany({
+    const instructorsData = await prisma.instructor.findMany({
       include: {
         subjects: {
-          include: {
+          select: {
+            subjectId: true,
             subject: true,
           },
         },
@@ -32,17 +18,39 @@ export const getInstructors = async (req: Request, res: Response) => {
       },
     });
 
-    const instructors = instructorsWithJoinTable.map((instructor) => {
-      return {
-        ...instructor,
+    const instructorsWithStudentCount = await Promise.all(
+      instructorsData.map(async (instructor) => {
+        const subjectIds = instructor.subjects.map(
+          (instSub) => instSub.subjectId
+        );
 
-        subjects: instructor.subjects.map(
-          (instructorSubject) => instructorSubject.subject
-        ),
-      };
-    });
+        let studentCount = 0;
+        if (subjectIds.length > 0) {
+          const distinctStudents = await prisma.studentSubject.groupBy({
+            by: ["studentId"],
+            where: {
+              subjectId: {
+                in: subjectIds,
+              },
+            },
+          });
+          studentCount = distinctStudents.length;
+        }
 
-    return res.status(200).json(instructors);
+        return {
+          id: instructor.id,
+          instructorID: instructor.instructorID,
+          name: instructor.name,
+          password: instructor.password,
+          createdAt: instructor.createdAt,
+          updatedAt: instructor.updatedAt,
+          subjects: instructor.subjects.map((instSub) => instSub.subject),
+          studentCount: studentCount,
+        };
+      })
+    );
+
+    return res.status(200).json(instructorsWithStudentCount);
   } catch (err) {
     console.error("Error fetching instructors:", err);
     return res.status(500).json({ message: "Internal server error" });
@@ -190,40 +198,6 @@ export const deleteInstructor = async (req: Request, res: Response) => {
   }
 };
 
-export const createSubject = async (req: Request, res: Response) => {
-  const { subjectCode, name } = req.body;
-
-  if (!subjectCode || !name) {
-    return res
-      .status(400)
-      .json({ message: "subjectCode and name are required." });
-  }
-
-  try {
-    const newSubject = await prisma.subject.create({
-      data: {
-        subjectCode,
-        name,
-      },
-    });
-
-    return res.status(201).json({
-      message: "Subject created successfully.",
-      subject: newSubject,
-    });
-  } catch (err: any) {
-    if (err.code === "P2002") {
-      const target = err.meta?.target || "fields";
-      return res.status(409).json({
-        message: `A subject with this code or name already exists. Failed on: ${target}`,
-      });
-    }
-
-    console.error("Error creating subject:", err);
-    return res.status(500).json({ message: "Internal server error." });
-  }
-};
-
 export const createQuestion = async (req: Request, res: Response) => {
   const { questionText, category } = req.body;
 
@@ -255,10 +229,17 @@ export const getAllQuestions = async (req: Request, res: Response) => {
   try {
     const questions = await prisma.question.findMany({
       orderBy: {
-        createdAt: "desc",
+        category: "asc",
       },
     });
-    return res.status(200).json(questions);
+
+    const stats = {
+      totalQuestions: questions.length,
+      activeQuestions: questions.filter((q) => q.isActive).length,
+      categories: new Set(questions.map((q) => q.category)).size,
+    };
+
+    return res.status(200).json({ questions, stats });
   } catch (err) {
     console.error("Error fetching questions:", err);
     return res.status(500).json({ message: "Internal server error." });
@@ -316,6 +297,146 @@ export const deleteQuestion = async (req: Request, res: Response) => {
         .json({ message: `Question with ID ${id} not found.` });
     }
     console.error("Error deleting question:", err);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+const getSubjectWithCounts = (id: string) => {
+  return prisma.subject.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: { students: true, instructors: true },
+      },
+    },
+  });
+};
+
+export const createSubject = async (req: Request, res: Response) => {
+  const { subjectCode, name, iconName } = req.body;
+
+  if (!subjectCode || !name) {
+    return res
+      .status(400)
+      .json({ message: "Subject code and name are required." });
+  }
+
+  // Sanitize input: convert empty string for iconName to null for the database.
+  const dataToCreate = {
+    subjectCode,
+    name,
+    iconName: iconName === "" ? null : iconName,
+  };
+
+  try {
+    const newSubject = await prisma.subject.create({
+      data: dataToCreate,
+    });
+
+    // After creating, fetch the full object with counts to return to the client.
+    const subjectWithCounts = await getSubjectWithCounts(newSubject.id);
+
+    return res.status(201).json({
+      message: "Subject created successfully.",
+      subject: subjectWithCounts, // Return the full object with _count
+    });
+  } catch (err: any) {
+    // Handle unique constraint violations (e.g., duplicate subject code or name).
+    if (err.code === "P2002") {
+      const target = err.meta?.target || "fields";
+      return res.status(409).json({
+        message: `A subject with this code or name already exists. Failed on: ${target}`,
+      });
+    }
+
+    // Handle all other errors.
+    console.error("Error creating subject:", err);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const getAllSubjects = async (req: Request, res: Response) => {
+  try {
+    const subjects = await prisma.subject.findMany({
+      orderBy: { name: "asc" },
+
+      include: {
+        _count: {
+          select: {
+            students: true,
+            instructors: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json(subjects);
+  } catch (err) {
+    console.error("Error fetching subjects:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateSubject = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { subjectCode, name, iconName } = req.body;
+
+  if (!subjectCode || !name) {
+    return res
+      .status(400)
+      .json({ message: "Subject code and name are required." });
+  }
+
+  const dataToUpdate = {
+    subjectCode,
+    name,
+    iconName: iconName === "" ? null : iconName,
+  };
+
+  try {
+    // Perform the update. We don't need the return value from this call.
+    await prisma.subject.update({
+      where: { id },
+      data: dataToUpdate,
+    });
+
+    // After updating, fetch the full object with counts to ensure the client gets the complete data shape.
+    const updatedSubjectWithCounts = await getSubjectWithCounts(id);
+
+    return res.status(200).json({
+      message: "Subject updated successfully.",
+      subject: updatedSubjectWithCounts, // Return the full object with _count
+    });
+  } catch (err: any) {
+    // Handle unique constraint violations (e.g., duplicate subject code or name).
+    if (err.code === "P2002") {
+      const target = err.meta?.target || "fields";
+      return res.status(409).json({
+        message: `A subject with this code or name already exists. Failed on: ${target}`,
+      });
+    }
+
+    // Handle all other errors.
+    console.error(`Error updating subject ${id}:`, err);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+export const deleteSubject = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.subject.delete({
+      where: { id },
+    });
+    return res.status(200).json({ message: "Subject deleted successfully." });
+  } catch (err: any) {
+    if (err.code === "P2003") {
+      return res.status(409).json({
+        message:
+          "Cannot delete subject. It is still assigned to students or instructors.",
+      });
+    }
+    console.error(`Error deleting subject ${id}:`, err);
     return res.status(500).json({ message: "Internal server error." });
   }
 };

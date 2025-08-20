@@ -1,26 +1,52 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+
+import { useState, useEffect } from "react";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { QuestionClientPage } from "@/components/admin-dashboard/QuestionClientPage";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Question } from "../../../../shared/prisma";
 
-async function getQuestions(): Promise<Question[]> {
-  try {
-    const response = await fetch("http://localhost:8080/admin/questions", {
-      cache: "no-store",
-    });
-    if (!response.ok) {
-      throw new Error("Failed to fetch questions");
-    }
-    return response.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
+interface QuestionStatsData {
+  totalQuestions: number;
+  activeQuestions: number;
+  categories: number;
 }
 
-const QuestionPage = async () => {
-  const initialQuestions = await getQuestions();
+const QuestionsManagementPage = () => {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [stats, setStats] = useState<QuestionStatsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchQuestions = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Authentication token not found.");
+
+      const response = await fetch("http://localhost:8080/admin/questions", {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch questions.");
+      }
+
+      const { questions, stats } = await response.json();
+      setQuestions(questions);
+      setStats(stats);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchQuestions();
+  }, []);
 
   return (
     <SidebarInset>
@@ -28,24 +54,27 @@ const QuestionPage = async () => {
         <SidebarTrigger />
         <h1 className="text-xl font-semibold">Question Management</h1>
       </header>
-
-      <div className="p-8 flex gap-4 flex-col h-full">
-        {}
-        <div>
-          <Card className="max-w-[200px]">
-            <CardHeader>
-              <CardTitle>Total Questions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl">{initialQuestions.length}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <QuestionClientPage initialQuestions={initialQuestions} />
-      </div>
+      <main className="relative p-4 md:p-8 min-h-[calc(100vh-61px)]">
+        {isLoading || !stats ? (
+          <div className="space-y-4">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </div>
+        ) : error ? (
+          <div className="text-red-600 bg-red-100 p-4 rounded-md">
+            <h3 className="font-bold">Error</h3>
+            <p>{error}</p>
+          </div>
+        ) : (
+          <QuestionClientPage
+            initialQuestions={questions}
+            initialStats={stats}
+            onDataChange={fetchQuestions}
+          />
+        )}
+      </main>
     </SidebarInset>
   );
 };
 
-export default QuestionPage;
+export default QuestionsManagementPage;

@@ -3,59 +3,27 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarProvider,
-  SidebarTrigger,
-  SidebarInset,
 } from "@/components/ui/sidebar";
-import { Home, User, HelpCircle, BookOpen, LogOut } from "lucide-react";
-import Link from "next/link";
-
-const items = [
-  { title: "Instructors", icon: <User />, url: "/dashboard" },
-  { title: "Questions", icon: <HelpCircle />, url: "/questions" },
-  { title: "Subjects", icon: <BookOpen />, url: "/subjects" },
-];
+import { SidebarNavMenu } from "@/components/admin-dashboard/SidebarNavMenu";
+import { SidebarUserFooter } from "@/components/admin-dashboard/SidebarUserFooter";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <h2 className="text-lg font-semibold text-center uppercase">
+          <h2 className="text-lg font-semibold text-center uppercase tracking-wider">
             Holy Trinity
           </h2>
         </SidebarHeader>
 
         <SidebarContent>
-          <SidebarMenu>
-            {items.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <Link href={`/admin/${item.url}`}>
-                  <SidebarMenuButton
-                    tooltip={item.title}
-                    isActive={item.title === "Home"}
-                  >
-                    {item.icon}
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
+          <SidebarNavMenu />
         </SidebarContent>
 
         <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton>
-                <LogOut />
-                <span>Logout</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+          <SidebarUserFooter />
         </SidebarFooter>
       </Sidebar>
 

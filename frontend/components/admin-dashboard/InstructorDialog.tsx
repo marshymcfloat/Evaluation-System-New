@@ -25,7 +25,7 @@ import { Subject } from "../../../shared/prisma";
 import SubjectBadge from "../SubjectBadge";
 import { adminSliceAction } from "@/lib/slice";
 import Spinner from "../ui/Spinner";
-import { InstructorWithSubjects } from "@/app/admin/dashboard/page";
+import { InstructorWithDetails } from "@/app/admin/dashboard/page";
 
 const departments = [
   { code: "CET", name: "college of engineering & technology" },
@@ -39,7 +39,7 @@ interface InstructorDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   onSaveSuccess: () => void;
-  initialData: InstructorWithSubjects | null;
+  initialData: InstructorWithDetails | null;
 }
 
 const InstructorDialog = ({
@@ -77,7 +77,7 @@ const InstructorDialog = ({
     const fetchData = async () => {
       setIsLoadingSubjects(true);
       try {
-        const response = await fetch("http://localhost:8080/admin/getSubjects");
+        const response = await fetch("http://localhost:8080/admin/subjects");
         if (!response.ok) return;
         const data = await response.json();
         dispatch(adminSliceAction.addSubjects(data));
@@ -106,7 +106,7 @@ const InstructorDialog = ({
 
     const url = isEditMode
       ? `http://localhost:8080/admin/instructors/${initialData?.id}`
-      : "http://localhost:8080/admin/createInstructor";
+      : "http://localhost:8080/admin/instructors";
 
     const method = isEditMode ? "PUT" : "POST";
 

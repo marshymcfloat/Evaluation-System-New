@@ -23,52 +23,48 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import SubjectBadge from "../SubjectBadge";
-import { InstructorWithDetails } from "@/app/admin/dashboard/page";
+import { Subject as PrismaSubject } from "../../../shared/prisma";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
-interface InstructorTableProps {
-  instructors: InstructorWithDetails[];
-  onEdit: (instructor: InstructorWithDetails) => void;
-  onDelete: (instructor: InstructorWithDetails) => void;
+type SubjectWithCounts = PrismaSubject & {
+  _count: {
+    students: number;
+    instructors: number;
+  };
+};
+
+interface SubjectTableProps {
+  subjects: SubjectWithCounts[];
+  onEdit: (subject: SubjectWithCounts) => void;
+  onDelete: (subject: SubjectWithCounts) => void;
 }
 
-const InstructorTable = ({
-  instructors,
-  onEdit,
-  onDelete,
-}: InstructorTableProps) => {
+const SubjectTable = ({ subjects, onEdit, onDelete }: SubjectTableProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All Instructors</CardTitle>
+        <CardTitle>All Subjects</CardTitle>
         <CardDescription>
-          A list of instructors for this semester.
+          A list of all available course subjects for this semester.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[200px]">Name</TableHead>
-              <TableHead>Subjects</TableHead>
-              <TableHead className="w-[100px]">Students</TableHead>
+              <TableHead>Subject Name</TableHead>
+              <TableHead>Code</TableHead>
+              <TableHead>Students Enrolled</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {instructors.length > 0 ? (
-              instructors.map((instructor) => (
-                <TableRow key={instructor.id}>
-                  <TableCell className="font-medium">
-                    {instructor.name}
-                  </TableCell>
-                  <TableCell className="flex flex-wrap gap-2 max-w-lg">
-                    {instructor.subjects.map((sub) => (
-                      <SubjectBadge key={sub.id} subject={sub.subjectCode} />
-                    ))}
-                  </TableCell>
-                  <TableCell>{instructor.studentCount || "N/A"}</TableCell>
+            {subjects.length > 0 ? (
+              subjects.map((subject) => (
+                <TableRow key={subject.id}>
+                  <TableCell className="font-medium">{subject.name}</TableCell>
+                  <TableCell>{subject.subjectCode}</TableCell>
+                  <TableCell>{subject._count.students}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -78,12 +74,12 @@ const InstructorTable = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => onEdit(instructor)}>
+                        <DropdownMenuItem onClick={() => onEdit(subject)}>
                           <Pencil className="mr-2 h-4 w-4" /> Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-red-500"
-                          onClick={() => onDelete(instructor)}
+                          className="text-red-500 focus:text-red-500"
+                          onClick={() => onDelete(subject)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" /> Delete
                         </DropdownMenuItem>
@@ -95,7 +91,7 @@ const InstructorTable = ({
             ) : (
               <TableRow>
                 <TableCell colSpan={4} className="h-24 text-center">
-                  No instructors found. Create one to get started.
+                  No subjects found.
                 </TableCell>
               </TableRow>
             )}
@@ -106,4 +102,4 @@ const InstructorTable = ({
   );
 };
 
-export default InstructorTable;
+export default SubjectTable;

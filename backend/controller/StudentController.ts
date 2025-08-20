@@ -5,7 +5,7 @@ export const getStudentSubjectsForEvaluation = async (
   req: Request,
   res: Response
 ) => {
-  // @ts-ignore -
+  // @ts-ignore - Assuming req.user is populated by your auth middleware
   const studentId = req.user.id;
 
   if (!studentId) {
@@ -41,6 +41,7 @@ export const getStudentSubjectsForEvaluation = async (
     });
 
     const evaluationList = studentSubjects.flatMap((ss) => {
+      // Assuming one instructor per subject for this context
       const instructorLink = ss.subject.instructors[0];
       if (!instructorLink) return [];
 
@@ -54,6 +55,7 @@ export const getStudentSubjectsForEvaluation = async (
           id: subject.id,
           name: subject.name,
           subjectCode: subject.subjectCode,
+          iconName: subject.iconName, // Include the icon name
         },
         instructor: {
           id: instructor.id,
